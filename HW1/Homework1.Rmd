@@ -77,7 +77,7 @@ mean(x1_na)
 **Please use R documentation to find the mean after excluding NA's (hint: `?mean`)**
 
 ```{r problem2}
-# your code here
+mean(x1_na, na.rm = T)
 ```
 
 
@@ -102,37 +102,53 @@ head(GaltonFamilies)
 a. **Please report the height of the 10th child in the dataset.**
 
 ```{r problem3a}
-# your code here
+GaltonFamilies$childHeight[10]
 ```
 
 b. **What is the breakdown of male and female children in the dataset?**
 
 ```{r problem3b}
-# your code here
+GaltonFamilies %>%
+  group_by(gender) %>%
+  summarise(count = n()) %>%
+  mutate(per=paste0(round(100*count/sum(count),2),'%'))
+
+
 ```
 
 c. **How many observations are in Galton's dataset? Please answer this
 question without consulting the R help.**
 
 ```{r problem3c}
-# your code here
+dim(GaltonFamilies)[1]
 ```
 
 d. **What is the mean height for the 1st child in each family?**
 
 ```{r problem3d}
-# your code here
+df <- GaltonFamilies %>%
+  group_by(family) %>%
+  filter(childNum == 1)
+  
+mean(df$childHeight, na.rm = T)
 ```
 
 e. **Create a table showing the mean height for male and female children.**
 ```{r problem3e}
-# your code here
+GaltonFamilies %>% 
+  group_by(gender) %>% 
+  summarise(mean_height = mean(childHeight, na.rm = T))
+  
 ```
 
 f. **What was the average number of children each family had?**
 
 ```{r problem3f}
-# your code here
+df <- GaltonFamilies %>% 
+  group_by(family) %>% 
+  summarise(mean_NumChild = mean(children))
+
+mean(df$mean_NumChild)
 ```
 
 g. **Convert the children's heights from inches to centimeters and store
@@ -140,7 +156,8 @@ it in a column called `childHeight_cm` in the `GaltonFamilies` dataset.
 Show the first few rows of this dataset.**
 
 ```{r problem3g}
-# your code here
+GaltonFamilies %>% 
+  mutate(childHeight_cm = childHeight * 2.54)
 ```
 
 
@@ -179,7 +196,16 @@ can iterate faster.
 However, please do run your final code on the whole dataset.
 
 ```{r cor, cache = TRUE}
-# your code here
+sim_data_sub %>%
+  group_by(group) %>% 
+  summarise(correlation = cor(X, Y)) %>% 
+  arrange(desc(correlation))
+```
+```{r cor, cache = TRUE}
+sim_data %>%
+  group_by(group) %>% 
+  summarise(correlation = cor(X, Y)) %>% 
+  arrange(desc(correlation))
 ```
 
 b. **The highest correlation is around 0.8. Can you explain why we see
@@ -195,7 +221,13 @@ thus uncorrelated?**
 you found in Problem 4.**
 
 ```{r problem5}
-# your code here
+sim_data %>%
+  filter(group == 71) %>% 
+  ggplot(aes(x = X, y = Y)) +
+  geom_point() +
+  ggtitle("Relation between X and Y") +
+  xlab("X") +
+  ylab("Y")
 ```
 
 Grading: 1pt.
@@ -219,14 +251,20 @@ names(dat) <- c("X", "Y", "Z")
 a. **Compute the overall correlation between X and Y.**
 
 ```{r problem6a}
-# your code here
+dat %>% 
+  summarise(correlation = cor(X, Y))
 ```
 
 b. **Make a plot showing the relationship between X and Y. Comment on
 the correlation that you see.**
 
 ```{r problem6b}
-# your code here
+dat %>% 
+  ggplot(aes(x = X, y = Y)) +
+  geom_point() +
+  ggtitle("Relation between X and Y") +
+  xlab("X") +
+  ylab("Y")
 ```
 
 Your text answer here.
@@ -234,7 +272,9 @@ Your text answer here.
 c. **Compute the correlations between X and Y for each level of Z.**
 
 ```{r problem6c}
-# your code here
+dat %>% 
+  group_by(Z) %>% 
+  summarise(correlation = cor(X, Y))
 ```
 
 d. **Make a plot showing the relationship between X and Y, but this
@@ -242,7 +282,12 @@ time, color the points using the value of Z. Comment on the result,
 especially any differences between this plot and the previous plot.**
 
 ```{r problem6d}
-# your code here
+dat %>% 
+  ggplot(aes(x = X, y = Y, color = Z)) +
+  geom_point() +
+  ggtitle("Relation between X and Y") +
+  xlab("X") +
+  ylab("Y")
 ```
 
 Your text answer here.
@@ -288,14 +333,15 @@ a. How many lines are there in this file? How many times "KRAS" gene
 has appeared?
 
 ```{r engine="bash", eval=FALSE}
-# your bash command
+wc -l file 
+grep "KRAS" file | wc -l
 ```
 
 b. How many unique `Variant_Classification` are there in the MAF? Please 
 count occurence of each type and sort them. Which one is the most frequent? 
 
 ```{r engine="bash", eval=FALSE}
-# your bash command
+cat test.txt | cut -f4 | tail -n +2 | sort | uniq -c | sort -rk1
 ```
 
 c. What are the top FIVE most frequent genes? Please provide 
@@ -305,13 +351,15 @@ better biological significance), which gene out of the top 5 would you
 choose? Why?
 
 ```{r engine="bash", eval=FALSE}
-# your bash command
+cat test.txt | cut -f3 | sort | uniq -c | sort -rk1
 ```
 
 Equivalent python command:
 
 ```{r engine="python", eval=FALSE}
-# your python command
+import pandas as pd 
+df = pd.read_csv("test.txt", header = 0, sep = '\t')
+df['Hugo_Symbol'].value_counts()
 ```
 
 Your text answer:
@@ -322,7 +370,14 @@ centennial years not divisible by 400). The user-input can be either positional
 or interactive.
 
 ```{r engine="bash", eval=FALSE}
-# your bash command
+#!/bin/bash
+let mode=$1%4
+let mode_2=$1%400
+if [ $mode == 0 ] && [ $mode_2 != 0 ]; then
+  echo "yes"
+else
+  echo "no"
+fi
 ```
 
 

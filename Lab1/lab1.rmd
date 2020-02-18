@@ -92,7 +92,7 @@ We often want to install packages to add some extra functionality on top of base
 Let's try to install the `nycflights13` package.
 
 ```{r, eval=FALSE,echo=TRUE, message=FALSE}
-install.packages("nycflights13")
+install.packages("nycflights13")a
 install.packages("ggplot2")
 install.packages("dplyr")
 ```
